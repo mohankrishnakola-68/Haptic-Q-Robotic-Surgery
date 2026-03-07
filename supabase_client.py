@@ -3,11 +3,15 @@ Haptic-Q Supabase Client
 Handles all database logging for surgical telemetry, quantum integrity, and breach events.
 """
 
+import os
+from dotenv import load_dotenv
 from supabase import create_client, Client
 import threading
 
-SUPABASE_URL = "https://kdtskvugdhtwjegdegno.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkdHNrdnVnZGh0d2plZ2RlZ25vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3NzIxNTcsImV4cCI6MjA4ODM0ODE1N30.jBUXZ9iH35uw3XGMAE4Gi90BOFkXsO9YEsDSt4iRq48"
+load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 _client: Client = None
 _lock = threading.Lock()

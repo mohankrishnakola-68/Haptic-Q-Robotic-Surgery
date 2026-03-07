@@ -13,399 +13,299 @@ async def get_dashboard(request: Request):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HAPTIC-Q // PRO SURGICAL CONSOLE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=IBM+Plex+Mono:wght@400;600&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>Haptic-Q | Surgeon Command Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #00F5D4;
-            --secondary: #7B61FF;
-            --accent: #FF2E63;
-            --bg-dark: #05070A;
-            --card-bg: rgba(10, 15, 25, 0.8);
-            --border-glow: rgba(0, 245, 212, 0.4);
-            --text-main: #FFFFFF;
-            --text-dim: #718096;
-            --border-dim: rgba(255, 255, 255, 0.08);
-            --force-orange: #FFA500;
-            --integrity-green: #00FF9C;
+            --bg: #0b0e14;
+            --panel: #151a24;
+            --accent: #00ffd4;
+            --danger: #ff3c41;
+            --text: #e0e6f0;
+            --text-dim: #8c96a5;
+            --glow: rgba(0, 255, 212, 0.4);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Space Grotesk', sans-serif;
-            height: 100vh;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
             background-image: 
-                radial-gradient(circle at 50% 50%, rgba(123, 97, 255, 0.03) 0%, transparent 100%),
-                linear-gradient(var(--border-dim) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border-dim) 1px, transparent 1px);
-            background-size: 100% 100%, 60px 60px, 60px 60px;
+                radial-gradient(circle at 50% 50%, rgba(20, 30, 50, 0.5) 0%, transparent 100%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
         }
 
-        /* Top Header */
         .header {
-            height: 70px;
+            height: 80px;
+            background: rgba(21, 26, 36, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--accent);
             display: flex;
-            justify-content: space-between;
             align-items: center;
             padding: 0 40px;
-            border-bottom: 1px solid var(--border-dim);
-            backdrop-filter: blur(10px);
-            z-index: 100;
+            justify-content: space-between;
+            box-shadow: 0 0 30px rgba(0, 255, 212, 0.15);
         }
 
-        .sys-title {
-            font-family: 'Michroma', sans-serif;
-            font-size: 1.4rem;
-            letter-spacing: 4px;
-            color: white;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
-
-        .link-status {
-            text-align: right;
-        }
-        .link-status .secure {
-            color: var(--primary);
-            font-family: 'Michroma';
-            font-size: 1.1rem;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
             letter-spacing: 2px;
-            display: block;
+            color: var(--text);
         }
-        .link-status .fail-safe {
-            font-family: 'IBM Plex Mono';
-            font-size: 0.7rem;
-            color: var(--integrity-green);
-            letter-spacing: 1px;
-            margin-top: 4px;
-        }
+        .logo span { color: var(--accent); text-shadow: 0 0 10px var(--glow); }
 
-        /* Main Workspace */
-        .workspace {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            grid-template-rows: 1fr auto;
-            gap: 20px;
-            padding: 20px;
-            max-width: 2000px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* Left Side: Video & Pillars */
-        .video-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .video-box {
-            flex: 1;
-            background: rgba(0,0,0,0.4);
-            border: 2px solid var(--primary);
-            position: relative;
-            box-shadow: inset 0 0 50px rgba(0, 245, 212, 0.1);
-        }
-
-        .innovation-pillars {
-            background: rgba(0, 245, 212, 0.05);
-            border: 1px solid var(--primary);
-            border-radius: 8px;
-            padding: 12px 25px;
+        .status-badge {
+            background: rgba(0, 255, 212, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
             display: flex;
             align-items: center;
-            gap: 20px;
-        }
-        .pillar-dot {
-            width: 12px; height: 12px;
-            background: var(--primary);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--primary);
-        }
-        .pillar-header {
-            font-family: 'Michroma';
-            font-size: 1.0rem;
-            color: var(--primary);
-            letter-spacing: 2px;
-        }
-        .pillar-content {
-            font-family: 'Space Grotesk';
-            font-size: 0.9rem;
-            color: #E2E8F0;
-            letter-spacing: 1px;
+            gap: 10px;
+            animation: pulse 2s infinite;
         }
 
-        /* Right Side: Graphs & Fail-Safe */
-        .telemetry-stack {
+        @keyframes pulse {
+            0% { opacity: 0.8; box-shadow: 0 0 5px var(--glow); }
+            50% { opacity: 1; box-shadow: 0 0 15px var(--glow); }
+            100% { opacity: 0.8; box-shadow: 0 0 5px var(--glow); }
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 30px;
+            padding: 30px;
+            height: calc(100vh - 80px);
+        }
+
+        .video-feed {
+            background: var(--panel);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-feed::before {
+            content: "SECURE LIVE STREAMING";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-family: 'JetBrains Mono';
+            font-size: 0.8rem;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+
+        .scanline {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 212, 0.02) 50.5%, transparent 51%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .telemetry-column {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .glass-panel {
-            background: var(--card-bg);
-            border: 1px solid var(--border-dim);
-            border-radius: 8px;
-            padding: 20px;
-            position: relative;
-            backdrop-filter: blur(10px);
+        .card {
+            background: var(--panel);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            transition: transform 0.3s ease;
         }
-        .glass-panel:hover { border-color: rgba(255,255,255,0.2); }
+        .card:hover { transform: translateY(-5px); border-color: rgba(0, 255, 212, 0.3); }
 
-        .panel-label {
-            font-family: 'Space Grotesk';
-            color: #FFFFFF;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
+        .card-title {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
-            font-weight: 600;
         }
-        .panel-label span { color: var(--primary); font-family: 'IBM Plex Mono'; font-weight: 800; }
 
-        .graph-area {
-            height: 120px;
-            border-left: 1px solid rgba(255,255,255,0.1);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        .value-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .value-display span { font-size: 1rem; color: var(--text-dim); margin-left: 5px; }
+
+        .graph-container {
+            margin-top: 20px;
+            height: 80px;
             display: flex;
             align-items: flex-end;
-            gap: 4px;
-            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        .bar { flex: 1; transition: height 0.3s ease; }
-
-        /* Quantum Fail-Safe Detail Box */
-        .fail-safe-box {
-            border: 1px solid var(--primary);
-            border-radius: 4px;
-            padding: 15px;
-            margin-top: 10px;
-            position: relative;
-        }
-        .fail-safe-header {
-            position: absolute;
-            top: -14px; left: 10px;
-            background: var(--bg-dark);
-            padding: 0 12px;
-            font-family: 'Michroma';
-            font-size: 0.8rem;
-            color: var(--primary);
-        }
-        .fs-metric {
-            font-family: 'IBM Plex Mono';
-            font-size: 1.1rem;
-            color: #FFFFFF;
-            margin-bottom: 10px;
-        }
-        .secure-badge {
-            position: absolute;
-            right: 15px;
-            bottom: 15px;
-            font-family: 'Michroma';
-            font-size: 0.9rem;
-            color: var(--primary);
+            gap: 3px;
         }
 
-        /* Footer Console */
-        .footer-console {
-            grid-column: 1 / span 2;
-            height: 100px;
-            background: rgba(10, 15, 25, 0.9);
-            border: 1px solid var(--border-dim);
-            display: grid;
-            grid-template-columns: 350px 1fr 350px;
-            gap: 1px;
-            background: var(--border-dim);
-        }
-
-        .footer-block {
-            background: var(--bg-dark);
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .coord-grid {
-            width: 60px; height: 60px;
-            border: 1px solid rgba(255,255,255,0.2);
-            position: relative;
-        }
-        .coord-grid::before, .coord-grid::after {
-            content: ''; position: absolute;
-            background: rgba(255,255,255,0.1);
-        }
-        .coord-grid::before { left: 50%; top: 0; width: 1px; height: 100%; }
-        .coord-grid::after { top: 50%; left: 0; height: 1px; width: 100%; }
-        .coord-dot {
-            position: absolute;
-            width: 6px; height: 6px;
-            background: var(--primary);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px var(--primary);
-        }
-
-        .block-title {
-            font-family: 'Space Grotesk';
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 5px;
-        }
-        .block-val {
-            font-family: 'Michroma';
-            font-size: 1.25rem;
-            color: white;
-        }
- 
-        .protocol-tag {
-            color: var(--accent);
-            font-family: 'Michroma';
-            font-size: 1.0rem;
-            margin-top: 5px;
-        }
-        .protocol-sub {
-            font-family: 'IBM Plex Mono';
-            font-size: 0.8rem;
-            color: var(--accent);
-            opacity: 1.0;
-        }
-
-        .ai-status {
-            background: var(--secondary);
-            color: white;
-            font-family: 'Space Grotesk';
-            font-size: 0.7rem;
-            padding: 3px 8px;
+        .graph-bar {
+            flex: 1;
+            background: var(--accent);
+            opacity: 0.3;
             border-radius: 2px;
-            font-weight: 700;
+            transition: height 0.5s ease;
         }
+
+        .system-controls {
+            margin-top: auto;
+            background: rgba(255, 60, 65, 0.05);
+            border: 1px solid rgba(255, 60, 65, 0.2);
+        }
+        .system-controls .card-title { color: var(--danger); }
+        .system-controls .value-display { color: var(--danger); text-shadow: none; }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        button:hover { background: #ff5257; }
+
+        /* Tech Hud Corners */
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: var(--accent);
+            border-style: solid;
+        }
+        .top-left { top: 15px; left: 15px; border-width: 3px 0 0 3px; }
+        .top-right { top: 15px; right: 15px; border-width: 3px 3px 0 0; }
+        .bottom-left { bottom: 15px; left: 15px; border-width: 0 0 3px 3px; }
+        .bottom-right { bottom: 15px; right: 15px; border-width: 0 3px 3px 0; }
+
+        .placeholder-vid {
+            text-align: center;
+            opacity: 0.5;
+        }
+        .placeholder-vid svg { width: 80px; color: var(--accent); margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="sys-title">HAPTIC-Q SURGEON CONSOLE</div>
-        <div class="link-status">
-            <span class="secure">SECURE LINK: ACTIVE</span>
-            <span class="fail-safe">[ FAIL-SAFE: READY ]</span>
+    <div class="header">
+        <div class="logo">HAPTIC-<span>Q</span></div>
+        <div class="status-badge" id="main-status">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent);"></span>
+            QUANTUM SECURE LINK ACTIVE
         </div>
-    </header>
+    </div>
 
-    <main class="workspace">
-        <div class="video-container">
-            <div class="video-box">
-                <div style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; color:rgba(255,255,255,0.2);">
-                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.0">
-                        <path d="M15 10l5 5-5 5M4 14h16"/>
-                    </svg>
-                    <div style="font-family: 'Michroma'; font-size: 1.0rem; margin-top: 15px; color: var(--primary); letter-spacing: 2px;">LIVE_SURGICAL_STREAM</div>
-                    <div style="font-family: 'IBM Plex Mono'; font-size: 0.8rem; color: #718096; margin-top: 5px;">[ WAITING FOR ENCRYPTED HANDSHAKE... ]</div>
-                </div>
-            </div>
+    <div class="main-grid">
+        <div class="video-feed">
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
+            <div class="scanline"></div>
             
-            <div class="innovation-pillars">
-                <div class="pillar-dot"></div>
-                <div>
-                    <div class="pillar-header">HACKATHON INNOVATION PILLARS</div>
-                    <div class="pillar-content">
-                        • INTER-STATION SYNC (Custom Q-Protocol) • 0ms TELEPORTATION • Q-NO CLONING DEFENSE
-                    </div>
-                </div>
+            <div class="placeholder-vid">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 7l-7 5 7 5V7z" />
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                </svg>
+                <p>TELE-PRESENCE VIDEO STREAM ACTIVE</p>
+                <small style="color: var(--accent); display: block; margin-top: 10px; font-family: 'JetBrains Mono';">AES-QST ENCRYPTED</small>
             </div>
         </div>
 
-        <div class="telemetry-stack">
-            <div class="glass-panel">
-                <div class="panel-label">Haptic Force Applied (mN) <span id="f-val-top">0</span></div>
-                <div class="graph-area" id="force-graph"></div>
-            </div>
-
-            <div class="glass-panel">
-                <div class="panel-label">Quantum Link Integrity (1-QBER %) <span id="i-val-top">99</span></div>
-                <div class="graph-area" id="integrity-graph"></div>
-            </div>
-
-            <div class="glass-panel" style="padding: 10px;">
-                <div class="fail-safe-box">
-                    <div class="fail-safe-header">QUANTUM FAIL-SAFE</div>
-                    <div class="fs-metric" id="qber-val">QBER [Error Rate]: 0.37%</div>
-                    <div class="fs-metric" id="stab-val">LINK STABILITY: 99.1%</div>
-                    <div class="fs-metric" id="qec-val">QEC REPAIR: ACTIVE | Repairs: 5182</div>
-                    <div class="secure-badge">SECURE</div>
+        <div class="telemetry-column">
+            <div class="card">
+                <div class="card-title">Haptic Force <span>REF: 255 mN</span></div>
+                <div class="value-display" id="force-val">142<span>mN</span></div>
+                <div class="graph-container">
+                    <div class="graph-bar" style="height: 40%"></div>
+                    <div class="graph-bar" style="height: 60%"></div>
+                    <div class="graph-bar" style="height: 55%"></div>
+                    <div class="graph-bar" style="height: 70%"></div>
+                    <div class="graph-bar" style="height: 65%"></div>
+                    <div class="graph-bar" style="height: 85%"></div>
+                    <div class="graph-bar" style="height: 50%"></div>
+                    <div class="graph-bar" style="height: 60%"></div>
+                    <div class="graph-bar" style="height: 75%"></div>
+                    <div class="graph-bar" style="height: 80%"></div>
                 </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Quantum Integrity <span>OPT: 100%</span></div>
+                <div class="value-display" id="integrity-val">99.8<span>%</span></div>
+                <div class="graph-container">
+                    <div class="graph-bar" style="height: 98%; opacity: 0.5;"></div>
+                    <div class="graph-bar" style="height: 99%; opacity: 0.5;"></div>
+                    <div class="graph-bar" style="height: 100%; opacity: 0.5;"></div>
+                    <div class="graph-bar" style="height: 98%; opacity: 0.5;"></div>
+                    <div class="graph-bar" style="height: 99%; opacity: 0.5;"></div>
+                    <div class="graph-bar" style="height: 97%; opacity: 0.5;"></div>
+                    <div class="graph-bar" style="height: 99%; opacity: 0.5;"></div>
+                    <div class="graph-bar" style="height: 98%; opacity: 0.5;"></div>
+                    <div class="graph-bar" style="height: 100%; opacity: 0.5;"></div>
+                    <div class="graph-bar" style="height: 99%; opacity: 0.5;"></div>
+                </div>
+            </div>
+
+            <div class="card system-controls">
+                <div class="card-title">System Status</div>
+                <div class="value-display" id="sec-msg">NORMAL</div>
+                <button onclick="emergencyStop()">EMERGENCY DISCONNECT</button>
             </div>
         </div>
-
-        <div class="footer-console">
-            <div class="footer-block">
-                <div class="coord-grid">
-                    <div class="coord-dot" id="dot"></div>
-                </div>
-                <div>
-                    <div class="block-title">Haptic Coordinate Stream</div>
-                    <div class="block-val" id="coord-val">X: 154 | Y: 102</div>
-                </div>
-            </div>
-
-            <div class="footer-block" style="flex-direction: column; align-items: flex-start; justify-content: center; gap: 0;">
-                <div class="block-title">PROTOCOL: STANDARD: Q-UDP/ENC</div>
-                <div class="protocol-tag">CLASSICAL ROUTE</div>
-                <div class="protocol-sub" id="delay-val">R-DELAY: 276 ms | SYNC RATE: 99.67%</div>
-            </div>
-
-            <div class="footer-block" style="flex-direction: column; align-items: flex-start; justify-content: center; gap: 5px;">
-                <div class="ai-status">QML ADVANTAGE</div>
-                <div class="block-title" style="margin: 0;">QUANTUM PREDICTION</div>
-                <div class="block-val" style="font-size: 0.9rem;">PRED DISABLED</div>
-                <div style="font-family: 'Space Grotesk'; font-size: 0.6rem; color: var(--text-dim);">[P] ACTIVATE AI | Expert Mode: Offline</div>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script>
-        const fGraph = document.getElementById('force-graph');
-        const iGraph = document.getElementById('integrity-graph');
-        
-        for(let i=0; i<30; i++) {
-            fGraph.innerHTML += `<div class="bar" style="background: var(--force-orange); opacity: 0.6; height: ${Math.random()*40+20}%"></div>`;
-            iGraph.innerHTML += `<div class="bar" style="background: var(--integrity-green); opacity: 0.7; height: ${Math.random()*20+70}%"></div>`;
-        }
-
         function updateTelemetry() {
-            const rx = 150 + Math.floor(Math.random()*10);
-            const ry = 100 + Math.floor(Math.random()*10);
-            const fVal = Math.floor(Math.random()*10);
-            const iVal = 99 + Math.floor(Math.random()*1);
-            const delay = 270 + Math.floor(Math.random()*10);
-            const repairs = 5180 + Math.floor(Math.random()*20);
-
-            document.getElementById('coord-val').innerText = `X: ${rx} | Y: ${ry}`;
-            document.getElementById('f-val-top').innerText = fVal;
-            document.getElementById('i-val-top').innerText = iVal;
-            document.getElementById('delay-val').innerText = `R-DELAY: ${delay} ms | SYNC RATE: 99.67%`;
-            document.getElementById('qec-val').innerText = `QEC REPAIR: ACTIVE | Repairs: ${repairs}`;
-
-            const dot = document.getElementById('dot');
-            dot.style.left = (rx - 150) * 5 + 30 + 'px';
-            dot.style.top = (ry - 100) * 5 + 30 + 'px';
-
-            const fbars = fGraph.querySelectorAll('.bar');
-            const ibars = iGraph.querySelectorAll('.bar');
-            fbars.forEach(b => b.style.height = (Math.random() * 50 + 10) + '%');
-            ibars.forEach(b => b.style.height = (Math.random() * 10 + 85) + '%');
+            // Simulated real-time updates
+            const force = Math.floor(Math.random() * 40 + 120);
+            const integrity = (99 + Math.random()).toFixed(1);
+            
+            document.getElementById('force-val').innerHTML = `${force}<span>mN</span>`;
+            document.getElementById('integrity-val').innerHTML = `${integrity}<span>%</span>`;
+            
+            // Shift bars
+            const bars = document.querySelectorAll('.graph-bar');
+            bars.forEach(bar => {
+                const h = Math.random() * 60 + 20;
+                bar.style.height = h + '%';
+            });
         }
 
-        setInterval(updateTelemetry, 150);
+        function emergencyStop() {
+            alert('EMERGENCY DISCONNECT SEQUENCE INITIATED');
+            document.getElementById('main-status').style.backgroundColor = 'var(--danger)';
+            document.getElementById('main-status').style.borderColor = 'var(--danger)';
+            document.getElementById('main-status').innerHTML = 'SYSTEM LOCKDOWN - BREACH DETECTED';
+            document.body.style.boxShadow = 'inset 0 0 200px rgba(255, 60, 65, 0.4)';
+        }
+
+        setInterval(updateTelemetry, 1000);
     </script>
 </body>
 </html>

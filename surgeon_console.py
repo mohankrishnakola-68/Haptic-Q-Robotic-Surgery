@@ -51,28 +51,26 @@ hw_active = False
 
 # --- Style / Theme ---
 def get_font(size, bold=False):
-    # Try multiple standard Windows fonts to ensure size is respected
-    fonts = ["seguisb.ttf" if bold else "segoeui.ttf", "arialbd.ttf" if bold else "arial.ttf", "consola.ttf"]
-    for f in fonts:
-        try:
-            return ImageFont.truetype(os.path.join("C:\\Windows\\Fonts", f), size)
-        except:
-            continue
-    return ImageFont.load_default()
+    try:
+        # Using Segoe UI or Arial Bold for a professional medical look
+        path = "C:\\Windows\\Fonts\\seguisb.ttf" if bold else "C:\\Windows\\Fonts\\segoeui.ttf"
+        return ImageFont.truetype(path, size)
+    except:
+        return ImageFont.load_default()
 
-F_HEADER = get_font(32, True)
-F_STATUS = get_font(22, True)
-F_PANEL_H = get_font(18, True)
-F_PANEL_V = get_font(15, False)
-F_FOOTER = get_font(15, False)
+F_HEADER = get_font(28, True)
+F_STATUS = get_font(20, True)
+F_PANEL_H = get_font(16, True)
+F_PANEL_V = get_font(14, False)
+F_FOOTER = get_font(14, False)
 
 # Colors (RGBA for PIL)
-CLR_BG = (10, 12, 18, 255)
-CLR_PANEL = (30, 35, 50, 255)
-CLR_CYAN = (0, 255, 230, 255)
-CLR_RED = (255, 50, 60, 255)
-CLR_TEXT = (255, 255, 255, 255)
-CLR_TEXT_DIM = (180, 195, 210, 255)
+CLR_BG = (15, 18, 25, 255)
+CLR_PANEL = (25, 30, 42, 255)
+CLR_CYAN = (0, 255, 220, 255)
+CLR_RED = (255, 60, 65, 255)
+CLR_TEXT = (220, 230, 240, 255)
+CLR_TEXT_DIM = (140, 150, 165, 255)
 
 def create_tech_bg():
     """Create a premium dark background with a subtle grid pattern."""
@@ -97,10 +95,10 @@ def draw_graph_panel(draw, x, y, w, h, title, value, unit, data, color, border_c
     draw.line([x, y, x, y+L], fill=(255, 255, 255, 100), width=3)
     
     # Title & Large Value Display
-    draw.text((x + 20, y + 15), title, font=F_PANEL_H, fill=(255, 255, 255, 255))
+    draw.text((x + 20, y + 15), title, font=F_PANEL_H, fill=CLR_TEXT_DIM)
     val_str = f"{value}"
-    tw = draw.textlength(val_str, font=F_PANEL_H)
-    draw.text((x + w - tw - 25, y + 15), val_str, font=F_PANEL_H, fill=color)
+    tw = draw.textlength(val_str, font=F_PANEL_V)
+    draw.text((x + w - tw - 25, y + 15), val_str, font=F_PANEL_V, fill=color)
     
     # Graph Area
     gx, gy, gw, gh = x + 20, y + 55, w - 40, h - 75
@@ -143,7 +141,7 @@ def render_ui(frame):
     # NEW: Fail-Safe & Robustness Tag
     fs_tag = "FAIL-SAFE: READY" if quantum_stability > 85 else "FALLBACK: ACTIVE"
     fs_col = (100, 255, 150) if quantum_stability > 85 else (255, 180, 50)
-    draw.text((WIDTH - 380, 58), f"[ {fs_tag} ]", font=get_font(10, True), fill=fs_col)
+    draw.text((WIDTH - 380, 50), f"[ {fs_tag} ]", font=get_font(12, True), fill=fs_col)
 
     # 2. Main Video Feed (Center-Left)
     vw, vh = 600, 450
@@ -163,9 +161,8 @@ def render_ui(frame):
         frame_pil = Image.fromarray(cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB))
         img.paste(frame_pil, (vx, vy))
     else:
-        draw.rectangle([vx, vy, vx + vw, vy + vh], fill=(15, 20, 30))
-        draw.text((vx + vw//2 - 140, vy + vh//2 - 20), "WAITING FOR CAMERA...", font=F_PANEL_H, fill=CLR_CYAN)
-        draw.text((vx + vw//2 - 140, vy + vh//2 + 20), "[CHECK USB CONNECTION]", font=F_PANEL_V, fill=CLR_TEXT_DIM)
+        draw.rectangle([vx, vy, vx + vw, vy + vh], fill=(20, 25, 35))
+        draw.text((vx + vw//2 - 100, vy + vh//2), "CONNECTING CAMERA...", font=F_PANEL_H, fill=CLR_TEXT_DIM)
 
     # 2.5 Hackathon Innovation Hub (Under the Video)
     hub_y = 585
@@ -190,27 +187,26 @@ def render_ui(frame):
     
     # New Security Status Text for Issue 2 (Professional Glassmorphism)
     # Positioned with air-gap from graph (ends at 575) and footer (starts at 650)
-    box_y = 575
-    box_h = 70
-    draw.rectangle([panel_x, box_y, panel_x + panel_w, box_y + box_h], fill=(10, 20, 35, 250), outline=CLR_CYAN, width=2)
+    box_y = 590
+    draw.rectangle([panel_x, box_y, panel_x + panel_w, box_y + 55], fill=(15, 25, 45, 240), outline=CLR_CYAN, width=2)
     
-    # Innovation Tag (Slightly larger tag)
-    draw.rectangle([panel_x + 5, box_y - 12, panel_x + 130, box_y + 10], fill=CLR_CYAN)
-    draw.text((panel_x + 12, box_y - 14), "QUANTUM FAIL-SAFE", font=get_font(11, True), fill=(0, 0, 0))
+    # Innovation Tag
+    draw.rectangle([panel_x + 5, box_y - 12, panel_x + 110, box_y + 8], fill=CLR_CYAN)
+    draw.text((panel_x + 10, box_y - 14), "QUANTUM FAIL-SAFE", font=get_font(10, True), fill=(0, 0, 0))
 
     qber_col = (100, 255, 100) if qber_rate < 11.0 else (255, 100, 100)
-    draw.text((panel_x + 15, box_y + 12), f"QBER [Error Rate]: {qber_rate:.2f}%", font=F_PANEL_V, fill=qber_col)
+    draw.text((panel_x + 10, box_y + 10), f"QBER [Error Rate]: {qber_rate:.2f}%", font=F_PANEL_V, fill=qber_col)
     
     stab_col = (100, 255, 220) if quantum_stability > 80 else (255, 200, 50)
-    draw.text((panel_x + 15, box_y + 30), f"LINK STABILITY: {quantum_stability:.1f}%", font=F_PANEL_V, fill=stab_col)
+    draw.text((panel_x + 10, box_y + 26), f"LINK STABILITY: {quantum_stability:.1f}%", font=F_PANEL_V, fill=stab_col)
     
     # QEC Status (Risk Mitigation)
-    qec_col = (150, 255, 180) if qec_active else CLR_TEXT_DIM
-    draw.text((panel_x + 15, box_y + 48), f"QEC: {'ACTIVE' if qec_active else 'OFF'}", font=get_font(12, True), fill=qec_col)
-    draw.text((panel_x + 125, box_y + 48), f"Repairs: {qec_repair_count}", font=get_font(12, True), fill=(220, 240, 255))
+    qec_col = (100, 255, 150) if qec_active else CLR_TEXT_DIM
+    draw.text((panel_x + 10, box_y + 42), f"QEC REPAIR: {'ACTIVE' if qec_active else 'OFF'}", font=get_font(10, True), fill=qec_col)
+    draw.text((panel_x + 130, box_y + 42), f"Repairs: {qec_repair_count}", font=get_font(10), fill=CLR_TEXT_DIM)
     
     security_text = "SECURE" if qber_rate < 11.0 else "INTERCEPTED!"
-    draw.text((panel_x + panel_w - 110, box_y + 22), security_text, font=F_PANEL_H, fill=qber_col)
+    draw.text((panel_x + panel_w - 95, box_y + 16), security_text, font=F_PANEL_H, fill=qber_col)
 
     # 4. Footer System Bar (Technical Navy Theme)
     draw.rounded_rectangle([30, 650, WIDTH - 30, 745], radius=10, fill=(30, 38, 55, 255), outline=(100, 120, 160, 255), width=2)
@@ -244,8 +240,8 @@ def render_ui(frame):
     
     psync_col = (100, 255, 200) if protocol_sync > 99 else (255, 255, 100)
     lat_col = (100, 255, 100) if latency_ms < 50 else (255, 100, 100)
-    draw.text((net_x, 706), f"R-DELAY: {latency_ms} ms", font=F_PANEL_V, fill=lat_col)
-    draw.text((net_x, 722), f"SYNC RATE: {protocol_sync:.2f}%", font=get_font(10), fill=psync_col)
+    draw.text((net_x, 703), f"R-DELAY: {latency_ms} ms", font=F_PANEL_V, fill=lat_col)
+    draw.text((net_x, 718), f"SYNC RATE: {protocol_sync:.2f}%", font=get_font(10), fill=psync_col)
     
     # Section C: Machine Learning Accuracy (Issue 3)
     ai_x = WIDTH - 260
@@ -263,11 +259,11 @@ def render_ui(frame):
     
     if qml_prediction_active:
         acc_col = (100, 255, 100) if prediction_accuracy > 99 else (255, 255, 100)
-        draw.text((ai_x, 706), f"CONFIDENCE: {prediction_accuracy:.2f}%", font=F_PANEL_V, fill=acc_col)
-        draw.text((ai_x, 722), "Simulates 1024 Quantum Shots/sec", font=get_font(9), fill=CLR_TEXT_DIM)
+        draw.text((ai_x, 708), f"CONFIDENCE: {prediction_accuracy:.2f}%", font=F_PANEL_V, fill=acc_col)
+        draw.text((ai_x, 725), "Simulates 1024 Quantum Shots/sec", font=get_font(10), fill=CLR_TEXT_DIM)
     else:
-        draw.text((ai_x, 706), "[P] ACTIVATE AI", font=F_PANEL_V, fill=CLR_TEXT_DIM)
-        draw.text((ai_x, 722), "Expert Mode: Offline", font=get_font(9), fill=CLR_TEXT_DIM)
+        draw.text((ai_x, 708), "[P] ACTIVATE AI", font=F_PANEL_V, fill=CLR_TEXT_DIM)
+        draw.text((ai_x, 725), "Expert Mode: Offline", font=get_font(10), fill=CLR_TEXT_DIM)
 
     # Emergency Overlay (Cinematic Breach Animation)
     if lockdown:
